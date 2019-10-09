@@ -48,6 +48,15 @@ public class TLC_Schedule extends AppCompatActivity {
 
 
     private void validate(String username, String password, String compareUser,String comparePass){
+
+        //input username & password and save to variables
+        //push enter
+        //opens mytlc.bestbuy.com
+        //redireict since no javascript
+        //post credentials
+
+
+
         if((username.equals(bbyId)) && (password.equals(bbyPassword))){
             Intent intent = new Intent (TLC_Schedule.this, Schedule.class);
             startActivity(intent);
@@ -55,6 +64,7 @@ public class TLC_Schedule extends AppCompatActivity {
             //Check for status 200 for login page
             //return true?
             if (200 == response.statusCode()) {
+
                 Toast toast = Toast.makeText(getApplicationContext(),
                         "200",
                         Toast.LENGTH_SHORT);
