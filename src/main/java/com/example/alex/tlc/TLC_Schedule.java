@@ -9,8 +9,15 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+import org.jsoup.nodes.Element;
 import org.jsoup.Connection.Response;
+
+import java.io.IOException;
+import java.net.URL;
+
+import javax.net.ssl.HttpsURLConnection;
 
 
 public class TLC_Schedule extends AppCompatActivity {
@@ -18,7 +25,6 @@ public class TLC_Schedule extends AppCompatActivity {
     private EditText username;
     private EditText password;
     private Button login;
-    private String url = "https://mytlc.bestbuy.com/";
     private String bbyId="Admin";
     private String bbyPassword="password";
     Response response;
@@ -40,46 +46,54 @@ public class TLC_Schedule extends AppCompatActivity {
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                validate(username.getText().toString(),password.getText().toString(),bbyId,bbyPassword);
+                validate(username.getText().toString(),password.getText().toString());
             }
         });
 
     }
 
 
-    private void validate(String username, String password, String compareUser,String comparePass){
+    private void validate(String username, String password){
 
         //input username & password and save to variables
         //push enter
         //opens mytlc.bestbuy.com
         //redireict since no javascript
         //post credentials
+        //check for "Welcome Alexander"
+            //change state
+        //else invalid login toast
 
-
-
-        if((username.equals(bbyId)) && (password.equals(bbyPassword))){
-            Intent intent = new Intent (TLC_Schedule.this, Schedule.class);
-            startActivity(intent);
-
-            //Check for status 200 for login page
-            //return true?
-            if (200 == response.statusCode()) {
-
-                Toast toast = Toast.makeText(getApplicationContext(),
-                        "200",
-                        Toast.LENGTH_SHORT);
-                toast.show();
-                /* what ever you want to do*/
+        try {
+            Document doc = Jsoup.connect("http://mytlc.bestbuy.com").get();
+            URL url = new URL("https://mytlc.bestbuy.com/");
+            HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+            conn.setRequestProperty("username", username);
+            conn.setRequestProperty("password", password);
+            conn.setRequestMethod("POST");
+            Elements elements = doc.select("span.navbar-brand");
+            for (Element e : elements){
+                if(e.text() == "Welcome Alexander") {
+                    Toast toast = Toast.makeText(getApplicationContext(),
+                            "You did it DORK",
+                            Toast.LENGTH_SHORT);
+                    toast.show();
+                }
             }
-
-        }
-        else{
             Toast toast = Toast.makeText(getApplicationContext(),
                     "Incorrect Login",
                     Toast.LENGTH_SHORT);
             toast.show();
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
+
+
+
+        }
+
     }
 
 
-}
+
